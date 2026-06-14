@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "ChromaTheme",
+  "version": "1.0",
+  "description": "Customize your Chrome experience with custom themes and automatic night mode",
+  "permissions": [
+    "storage",
+    "tabs",
+    "alarms"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"]
+    }
+  ]
+}

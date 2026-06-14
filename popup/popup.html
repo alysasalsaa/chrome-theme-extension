@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ChromaTheme</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="header">
+      <div class="logo">🎨 ChromaTheme</div>
+      <div class="version">v1.0</div>
+    </header>
+
+    <!-- Night Mode Toggle -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-icon">🌙</span>
+        <span class="section-title">Night Mode</span>
+        <label class="toggle">
+          <input type="checkbox" id="night-toggle" />
+          <span class="slider"></span>
+        </label>
+      </div>
+      <p class="section-desc">Auto-enables between 8PM – 6AM</p>
+      <div class="night-controls" id="night-controls">
+        <div class="row">
+          <label>Opacity</label>
+          <input type="range" id="night-opacity" min="10" max="80" value="40" />
+          <span id="opacity-val">40%</span>
+        </div>
+        <div class="row">
+          <label>Color</label>
+          <input type="color" id="night-color" value="#ff6b00" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Theme Presets -->
+    <div class="section">
+      <div class="section-title-row">
+        <span class="section-icon">✨</span>
+        <span class="section-title">Theme Presets</span>
+      </div>
+      <div class="presets" id="presets"></div>
+    </div>
+
+    <!-- Custom Colors -->
+    <div class="section">
+      <div class="section-title-row">
+        <span class="section-icon">🎨</span>
+        <span class="section-title">Custom Colors</span>
+      </div>
+      <div class="color-grid">
+        <div class="color-item">
+          <label>Background</label>
+          <input type="color" id="c-bg" value="#1a1a2e" />
+        </div>
+        <div class="color-item">
+          <label>Text</label>
+          <input type="color" id="c-text" value="#ffffff" />
+        </div>
+        <div class="color-item">
+          <label>Links</label>
+          <input type="color" id="c-link" value="#6366f1" />
+        </div>
+        <div class="color-item">
+          <label>Accent</label>
+          <input type="color" id="c-accent" value="#22c55e" />
+        </div>
+      </div>
+      <button class="btn-apply" id="btn-apply">Apply Theme</button>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="section">
+      <div class="section-title-row">
+        <span class="section-icon">♿</span>
+        <span class="section-title">Accessibility</span>
+      </div>
+      <div class="access-grid">
+        <button class="access-btn" data-filter="none">Normal</button>
+        <button class="access-btn" data-filter="protanopia">Protanopia</button>
+        <button class="access-btn" data-filter="deuteranopia">Deuteranopia</button>
+        <button class="access-btn"
