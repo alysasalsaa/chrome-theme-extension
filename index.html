@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChromaTheme — Chrome Extension</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a12; --surface: rgba(255,255,255,0.04); --border: rgba(255,255,255,0.08);
+      --text: #f1f0ee; --muted: #6b7280; --accent: #6366f1; --accent2: #a78bfa;
+      --radius: 16px; --ease: cubic-bezier(0.16,1,0.3,1);
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    .blob { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; }
+    .blob-1 { width:500px;height:500px;background:rgba(99,102,241,0.15);top:-150px;left:-100px; }
+    .blob-2 { width:400px;height:400px;background:rgba(167,139,250,0.1);bottom:0;right:-100px; }
+    .page { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* Hero */
+    .hero { text-align: center; padding: 80px 0 60px; }
+    .badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); border-radius: 999px; padding: 5px 14px; font-size: 0.72rem; font-family: 'Geist Mono', monospace; color: var(--accent2); letter-spacing: 0.05em; margin-bottom: 24px; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.4rem, 7vw, 5rem); font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 20px; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { font-size: 1.05rem; color: var(--muted); max-width: 520px; margin: 0 auto 36px; line-height: 1.7; }
+    .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 13px 24px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; text-decoration: none; transition: all 0.18s var(--ease); border: none; font-family: 'DM Sans', sans-serif; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(99,102,241,0.35); }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: rgba(99,102,241,0.4); transform: translateY(-2px); }
+
+    /* Mockup */
+    .mockup-wrap { margin: 60px 0; display: flex; justify-content: center; }
+    .mockup { background: #1e1b4b; border: 1px solid rgba(99,102,241,0.3); border-radius: 20px; padding: 24px; width: 280px; box-shadow: 0 24px 80px rgba(99,102,241,0.2), 0 0 0 1px rgba(255,255,255,0.05); }
+    .mockup-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .mockup-logo { font-size: 1rem; font-weight: 700; }
+    .mockup-ver { font-size: 0.65rem; font-family: 'Geist Mono', monospace; color: var(--muted); background: rgba(255,255,255,0.06); padding: 2px 8px; border-radius: 999px; }
+    .mockup-section { margin-bottom: 16px; }
+    .mockup-label { font-size: 0.7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .presets-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+    .preset-pill { height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 600; }
+    .color-row { display: flex; gap: 6px; }
+    .color-swatch { flex: 1; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.58rem; font-weight: 600; }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 12px; }
+    .toggle-info { font-size: 0.75rem; }
+    .toggle-info small { display: block; color: var(--muted); font-size: 0.62rem; margin-top: 2px; }
+    .toggle-switch { width: 36px; height: 20px; background: var(--accent); border-radius: 999px; position: relative; }
+    .toggle-switch::after { content: ''; position: absolute; width: 14px; height: 14px; background: #fff; border-radius: 50%; top: 3px; right: 3px; }
+
+    /* Features */
+    .features { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-bottom: 60px; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; transition: border-color 0.2s, transform 0.2s; }
+    .feature-card:hover { border-color: rgba(99,102,241,0.35); transform: translateY(-3px); }
+    .feature-icon { font-size: 1.5rem; margin-bottom: 12px; }
+    .feature-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 6px; }
+    .feature-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.6; }
+
+    /* Install */
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 8px; text-align: center; }
+    .section-sub { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 32px; }
+    .steps { display: flex; flex-direction: column; gap: 12px; max-width: 560px; margin: 0 auto 40px; }
+    .step { display: flex; align-items: flex-start; gap: 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px; }
+    .step-num { width: 28px; height: 28px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; flex-shrink: 0; }
+    .step-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 3px; }
+    .step-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+    code { background: rgba(99,102,241,0.12); color: var(--accent2); padding: 1px 6px; border-radius: 5px; font-family: 'Geist Mono', monospace; font-size: 0.82em; }
+
+    footer { text-align: center; color: var(--muted); font-size: 0.75rem; padding-top: 40px; border-top: 1px solid var(--border); margin-top: 60px; }
+    footer a { color: var(--accent2); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 60px 0 40px; }
+      .mockup { width: 100%; max-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="page">
+
+  <section class="hero">
+    <div class="badge">🧩 Chrome Extension · Manifest V3</div>
+    <h1>🎨 Chroma<span>Theme</span></h1>
+    <p>Customize your Chrome experience with theme presets, automatic night mode, custom colors, and accessibility filters — all from the toolbar.</p>
+    <div class="btn-group">
+      <a href="https://github.com/alysasalsaa/chrome-theme-extension" target="_blank" class="btn btn-primary">⬇️ Download from GitHub</a>
+      <a href="https://github.com/alysasalsaa/chrome-theme-extension" target="_blank" class="btn btn-secondary">📖 View Source</a>
+    </div>
+  </section>
+
+  <div class="mockup-wrap">
+    <div class="mockup">
+      <div class="mockup-header">
+        <span class="mockup-logo">🎨 ChromaTheme</span>
+        <span class="mockup-ver">v1.0</span>
+      </div>
+      <div class="mockup-section">
+        <div class="mockup-label">✨ Theme Presets</div>
+        <div class="presets-grid">
+          <div class="preset-pill" style="background:#0f172a;color:#f8fafc">🌑 Dark</div>
+          <div class="preset-pill" style="background:#0c1445;color:#e0f2fe">🌊 Ocean</div>
+          <div class="preset-pill" style="background:#0a1f0a;color:#dcfce7">🌿 Forest</div>
+          <div class="preset-pill" style="background:#1a0a00;color:#fff7ed">🌅 Sunset</div>
+          <div class="preset-pill" style="background:#1a0033;color:#f5f3ff">💜 Purple</div>
+          <div class="preset-pill" style="background:#f8fafc;color:#0f172a">☀️ Light</div>
+        </div>
+      </div>
+      <div class="mockup-section">
+        <div class="mockup-label">🎨 Custom Colors</div>
+        <div class="color-row">
+          <div class="color-swatch" style="background:#1a1a2e;color:#fff">BG</div>
+          <div class="color-swatch" style="background:#ffffff;color:#000">Text</div>
+          <div class="color-swatch" style="background:#6366f1;color:#fff">Link</div>
+          <div class="color-swatch" style="background:#22c55e;color:#fff">Accent</div>
+        </div>
+      </div>
+      <div class="mockup-section">
+        <div class="toggle-row">
+          <div class="toggle-info">🌙 Night Mode<small>Auto 8PM – 6AM</small></div>
+          <div class="toggle-switch"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature-card"><div class="feature-icon">✨</div><div class="feature-title">6 Theme Presets</div><div class="feature-desc">Dark, Ocean, Forest, Sunset, Purple, and Light — switch instantly with one click.</div></div>
+    <div class="feature-card"><div class="feature-icon">🌙</div><div class="feature-title">Auto Night Mode</div><div class="feature-desc">Automatically applies a warm overlay between 8PM and 6AM. Fully customizable opacity and color.</div></div>
+    <div class="feature-card"><div class="feature-icon">🎨</div><div class="feature-title">Custom Colors</div><div class="feature-desc">Set your own background, text, link, and accent colors — applied instantly to any page.</div></div>
+    <div class="feature-card"><div class="feature-icon">♿</div><div class="feature-title">Accessibility Filters</div><div class="feature-desc">Protanopia, Deuteranopia, Tritanopia, and Grayscale filters for better visibility.</div></div>
+    <div class="feature-card"><div class="feature-icon">💾</div><div class="feature-title">Persistent Settings</div><div class="feature-desc">Your preferences are saved via Chrome sync storage across all your devices.</div></div>
+    <div class="feature-card"><div class="feature-icon">⚡</div><div class="feature-title">Manifest V3</div><div class="feature-desc">Built with the latest Chrome extension standard using service workers.</div></div>
+  </div>
+
+  <div class="section-title">How to Install</div>
+  <div class="section-sub">Chrome Web Store not required — install directly from source in 4 steps</div>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div><div class="step-title">Download the source</div><div class="step-desc">Click "Download from GitHub" → Code → Download ZIP → Extract the folder.</div></div></div>
+    <div class="step"><div class="step-num">2</div><div><div class="step-title">Open Chrome Extensions</div><div class="step-desc">Go to <code>chrome://extensions</code> in your browser address bar.</div></div></div>
+    <div class="step"><div class="step-num">3</div><div><div class="step-title">Enable Developer Mode</div><div class="step-desc">Toggle the <code>Developer mode</code> switch in the top right corner.</div></div></div>
+    <div class="step"><div class="step-num">4</div><div><div class="step-title">Load the extension</div><div class="step-desc">Click <code>Load unpacked</code> → select the extracted <code>chrome-theme-extension-main</code> folder. Done!</div></div></div>
+  </div>
+
+  <div style="text-align:center">
+    <a href="https://github.com/alysasalsaa/chrome-theme-extension" target="_blank" class="btn btn-primary">⬇️ Download from GitHub</a>
+  </div>
+
+  <footer>
+    <p>Built by <a href="https://alysaprojects.vercel.app" target="_blank">Alysa Salsabila</a> · <a href="https://github.com/alysasalsaa/chrome-theme-extension" target="_blank">GitHub</a></p>
+  </footer>
+</div>
+</body>
+</html>
